@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vue Basics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/vue@next" defer></script>
+  <script src="app.js" defer></script>
+</head>
+
+<body>
+  <header>
+    <h1>Monster Slayer</h1>
+  </header>
+  <div id="game">
+    <section id="monster" class="container">
+      <h2>Monster Health</h2>
+      <div class="healthbar">
+        <div class="healthbar__value" :style="monsterHP"></div>
+      </div>
+      <div>
+        Status
+        <br />
+        | HP: {{ monsterBaseStats.hp }} |
+        Attack: {{ monsterBaseStats.attack }} |
+        Defense: {{ monsterBaseStats.defense }} |
+      </div>
+    </section>
+    <section id="player" class="container">
+      <h2>Your Health</h2>
+      <div class="healthbar">
+        <div class="healthbar__value" :style="playerHP"></div>
+      </div>
+      <div>
+        Status
+        <br />
+        | Level: {{ playerBaseStats.level.actualLevel }} |
+        HP: {{ playerBaseStats.hp }} |
+        Attack: {{ playerBaseStats.attack }} |
+        Defense: {{ playerBaseStats.defense }} |
+        Exp: {{ playerBaseStats.totalExp }} / {{ playerBaseStats.level.expToNextLevel }} |
+      </div>
+    </section>
+    <section class="container" v-if="gameStatus">
+      <h3>Game Over</h3>
+      <h4 v-if="gameStatus === 'won'">You Win</h4>
+      <h4 v-if="gameStatus === 'lose'">You Lose</h4>
+      <h4 v-if="gameStatus === 'draw'">Draw</h4>
+      <button v-on:click="tryAgain">Try again</button>
+    </section>
+    <section id="controls" v-if="!gameStatus">
+      <button v-on:click="basicAttack">ATTACK</button>
+      <button v-on:click="specialAttack" :disabled="this.playerBaseStats.countForSpecialAttack < 4">SPECIAL
+        ATTACK</button>
+      <button v-on:click="healPlayer" :disabled="this.playerBaseStats.countForHeal < 3">HEAL</button>
+      <button v-on:click="surrender">SURRENDER</button>
+    </section>
+    <section id="log" class="container">
+      <h2>Battle Log</h2>
+      <ul v-for="log in logs">
+        <li v-if="log.actions === 'attack'">
+          <span v-if="log.byWho === 'player'">Player</span>&nbsp;
+          <span v-else>Monster</span>&nbsp;
+          <span>{{ log.actions }}</span>&nbsp;
+          <span
+            :class="{ 'log--player': log.byWho === 'player', 'log--monster': log.byWho === 'monster' }">{{log.values}}</span>
+        </li>
+
+        <li v-if="log.actions === 'special'">
+          <span v-if="log.byWho === 'player'">Player</span>&nbsp;
+          <span>{{ log.actions }}</span>&nbsp;
+          <span :class="{ 'log--damage': log.byWho === 'player' }">{{log.values}}</span>
+        </li>
+
+        <li v-if="log.actions === 'heal'">
+          <span v-if="log.byWho === 'player'">Player</span>&nbsp;
+          <span>{{ log.actions }}</span>&nbsp;
+          <span :class="{ 'log--heal': log.byWho === 'player' }">{{log.values}}</span>
+        </li>
+      </ul>
+    </section>
+  </div>
+</body>
+
+</html>
